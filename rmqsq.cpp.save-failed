@@ -1,0 +1,40 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    int N;
+    cin >> N;
+    vector<int> A;
+    A.reserve(N);
+    for (int i = 0; i != N; ++i) {
+        int temp;
+        cin >> temp;
+        A.push_back(temp);
+    }
+
+    vector<vector<int>> table;
+    table[0] = A;
+    for (int i = 1; (1 << i) < N; ++i) {
+        int stride = 1 << i;
+        table.push_back({});
+        for (int x = 0; x + stride <= N; ++x) {
+            table[i].push_back(min(table[i - 1][x], table[i - 1][x + stride / 2]));
+        }
+    }
+
+    for (auto x : table) {
+        for (auto y : x) {
+            cout << y << " ";
+        }
+        cout << "\n";
+    }
+
+    int Q;
+    cin >> Q;
+    for (int i = 0; i != Q; ++i) {
+        int a, b;
+        cin >> a >> b;
+    }
+}

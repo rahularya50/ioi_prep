@@ -1,0 +1,62 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+using T = vector<vector<vector<int>>>;
+
+int go(int lpos, int rpos, int wdelta, T& dp, const vector<bool>& left_w, const vector<bool>& right_w) {
+    int N = left_w.size();
+
+    int rdelta = rpos - lpos + 2;
+    int wlookup = wdelta + N;
+
+    if (rdelta > 4 || rdelta < 0) {
+        return -1;
+    }
+
+    if (lpos == N - 1) {
+        return abs(wdelta);
+    }
+
+    if (dp[wlookup][lpos][rdelta]) {
+        return dp[wlookup][lpos][rdelta];
+    }
+
+    int out = numeric_limits<int>::max();
+
+    for (int new_r = rpos; (new_r - lpos) <= 2 && new_r < N - 1; ++new_r) {
+        out = min(out, 1 + go(lpos, new_r, wdelta + right_w[new_r], dp, left_w, right_w));
+    }
+
+    for (int new_l = lpos; (new_l - rpos) <= 2 && new_l < N - 1; ++new_l) {
+        out = min(out, 1 + go(new_l, rpos, wdelta + left_w[new_l], dp, left_w, right_w));
+    }
+
+    dp[wlookup][lpos][rdelta] = out;
+    return dp[wlookup][lpos][rdelta];
+}
+
+int main() {
+    int N;
+    cin >> N;
+
+    vector<bool> left_wet;
+    left_wet.reserve(N);
+    for (int i = 0; i != N; ++i) {
+        char x;
+        cin >> x;
+        left_wet.push_back(x == 'W');
+    }
+
+    vector<bool> right_wet;
+    right_wet.reserve(N);
+    for (int i = 0; i != N; ++i) {
+        char x;
+        cin >> x;
+        right_wet.push_back(x == 'W');
+    }
+
+    T dp(2*N + 1, vector<vector<int>>(N, vector<int>(5, -1)));
+
+    cout << go(0, 0, 0, dp, left_wet, right_wet);
+}
