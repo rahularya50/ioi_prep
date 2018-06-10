@@ -19,21 +19,7 @@ struct interval {
 
 vector<interval> intervals;
 
-long long dfs_subtree_size(long long i) {
-    auto& a = intervals[i];
-    long long out = a.end_x - a.start_x;
-    for (auto x : a.edges) {
-        if (x == a.parent) {
-            continue;
-        }
-        out += dfs_subtree_size(x);
-    }
-    a.subtree_size = out % MODULUS;
-    return a.subtree_size;
-}
-
 void dfs_closest_children(long long i) {
-//    cout << "closest_children(" << i << ")\n";
     auto& a = intervals[i];
     a.num_closest_children[0] = vector<long long>(a.end_x - a.start_x);
     a.num_closest_children[1] = vector<long long>(a.end_x - a.start_x);
@@ -104,13 +90,6 @@ void dfs_closest_children(long long i) {
         a.num_closest_children[i].back() += curr % MODULUS;
         a.dist_closest_children[i].back() += curr_dist % MODULUS;
     }
-
-//    long long curr = 0;
-//    for (long long i = 0; i != a.num_closest_children.size(); ++i) {
-//        curr += a.num_closest_children[i];
-//        a.run_closest_children[i] = curr;
-//    }
-//    cout << "ret " << i << "\n";
 }
 
 long long go(long long ival) {
@@ -155,49 +134,31 @@ long long go(long long ival) {
             }
             auto& curr_edge = intervals[v];
             for (long long x = max(curr_edge.start_x, a.start_x); x != min(curr_edge.end_x, a.end_x); ++x) {
-//                cout << x << "\n";
                 long long temp = 0;
                 long long d = x - a.start_x;
                 auto edge_start = max(0LL, curr_edge.start_x - a.start_x); // the actual point
                 auto edge_end = min(len, curr_edge.end_x - a.start_x); // one-past
-//                cout << "considering everything EXCEPT " << edge_start << " <= x < " << edge_end << "\n";
                 temp += d * run_num_sums[i][edge_start];
                 temp -= run_prod_num_sums[i][edge_start];
-//                temp += run_prod_num_sums[i].back() - run_prod_num_sums[i][edge_end];
-//                temp -= d * (run_num_sums[i].back() - run_num_sums[i][edge_end]);
-//                cout << "temp_sameside = " << temp << " " << i << " " << v << " " << x << " " << d << "\n";
 
                 temp += d * run_num_sums[1 - i][d + 1];
                 temp -= run_prod_num_sums[1 - i][d + 1];
-//                temp += run_prod_num_sums[1 - i].back() - run_prod_num_sums[1 - i][d + 1];
-//                temp -= d * (run_num_sums[1 - i].back() - run_num_sums[1 - i][d + 1]);
 
                 temp += d * run_num_sums[2][d + 1];
                 temp -= run_prod_num_sums[2][d + 1];
                 temp += run_prod_num_sums[2].back() - run_prod_num_sums[2][d + 1];
                 temp -= d * (run_num_sums[2].back() - run_num_sums[2][d + 1]);
-//                cout << "temp_all = " << temp << " " << i << " " << v << " " << x << " " << d << "\n";
 
                 out += (temp * a.num_closest_children[i][d]) % MODULUS;
-//                cout << "total internal = " << (temp * a.num_closest_children[i][d]) % MODULUS << "\n";
                 // internal movement calculation completed
 
-//                cout << "end sum = " << run_num_sums[i][edge_end] << "\n";
-//                cout << "start sum = " << run_num_sums[i][edge_start] << "\n";
-//                cout << "len = " << len << "\n";
-//                cout << "opp side = " << run_num_sums[1 - i].back() << "\n";
-//                cout << "same side = " << run_num_sums[i].back() << "\n";
                 long long num = len + run_num_sums[1 - i].back() + run_num_sums[i].back() - run_num_sums[i][edge_end]
                 + run_num_sums[i][edge_start];// - (min(len, curr_edge.end_x - a.start_x) - max(0, curr_edge.start_x - a.start_x - 1)) + 1;
 
-//                cout << "num = " << num << "\n";
                 out += (num * a.dist_closest_children[i][d]) % MODULUS;
-//                cout << "total external = " << (num * a.dist_closest_children[i][d]) % MODULUS << "\n";
-//                cout << "out is now = " << out << "\n";
             }
         }
     }
-//    cout << ival << " " << internal << " + " << (out - internal) << " = " << out << "\n";
     return out % MODULUS;
 }
 
@@ -272,16 +233,7 @@ int main() {
         }
     }
 
-    dfs_subtree_size(0);
     dfs_closest_children(0);
-//
-//    for (auto i : intervals) {
-//        cout << "{" << i.start_x << ", " << i.end_x << ", " << i.y << ", " << i.subtree_size << " { ";
-//        for (long long j = 0; j != i.num_closest_children[0].size(); ++j) {
-//            cout << i.num_closest_children[1][j] << ": " << i.dist_closest_children[1][j] << ", ";
-//        }
-//        cout << "} }\n";
-//    }
 
     long long out = 0;
     for (long long i = 0; i != intervals.size(); ++i) {
