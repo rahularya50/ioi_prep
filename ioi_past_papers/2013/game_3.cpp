@@ -154,19 +154,6 @@ void update(int p, int q, long long k) {
 long long calculate(int p, int q, int u, int v) {
     return x_lookup(root, p, u + 1, static_cast<long long>(q) << cnt, (static_cast<long long>(v) + 1LL) << cnt);
 }
-//
-//int main() {
-//    init(2, 3);
-//    update(0, 0, 20);
-//    update(0, 2, 15);
-//    update(1, 1, 12);
-//    cout << calculate(0, 0, 0, 2) << "\n";
-//    cout << calculate(0, 0, 1, 1) << "\n";
-//    update(0, 1, 6);
-//    update(1, 1, 14);
-//    cout << calculate(0, 0, 0, 2) << "\n";
-//    cout << calculate(0, 0, 1, 1) << "\n";
-//}
 
 int main() {
     int X, Y, N;

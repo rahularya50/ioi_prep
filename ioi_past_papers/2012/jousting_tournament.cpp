@@ -14,21 +14,16 @@ void zero(long long row, long long i, long long low, long long high) {
     long long start_pos = step_size * i;
     long long end_pos = step_size * (i + 1);
     long long mid_pos = (start_pos + end_pos) / 2;
-
-
     if (cnt_tree[row][i] == 0 || low <= start_pos && high >= end_pos) {
-//        cout << "zeroing interval " << start_pos << " <= x < " << end_pos << "\n";
         cnt_tree[row][i] = 0;
         return;
     }
-
     if (low < mid_pos) {
         zero(row + 1, 2 * i, low, min(mid_pos, high));
     }
     if (high > mid_pos) {
         zero(row + 1, 2 * i + 1, max(mid_pos, low), high);
     }
-
     cnt_tree[row][i] = cnt_tree[row + 1][2 * i] + cnt_tree[row + 1][2 * i + 1];
 }
 
@@ -37,17 +32,12 @@ long long lookup(long long row, long long i, long long target) {
     long long start_pos = step_size * i;
     long long end_pos = step_size * (i + 1);
     long long mid_pos = (start_pos + end_pos) / 2;
-
-//    cout << "looking in interval " << start_pos << " <= x < " << end_pos << "\n";
-
     if (target == 0) {
         return start_pos;
     }
-
     if (step_size == 1) {
         return end_pos;
     }
-
     long long mid_count = cnt_tree[row + 1][2 * i];
     if (target <= mid_count) {
         return lookup(row + 1, 2 * i, target);
@@ -57,25 +47,18 @@ long long lookup(long long row, long long i, long long target) {
 }
 
 long long max_int(long long a, long long b) {
-//    cout << "querying between " << a << " <= x < " << b << "\n";
     long long row = max_table.size() - static_cast<long long>(log2(b - a)) - 1;
     long long stride = 1 << (max_table.size() - row - 1);
-//    cout << "row = " << row << "\n";
-//    cout << "stride = " << stride << "\n";
     auto out = max(max_table[row][a], max_table[row][b - stride]);
-//    cout << "out = " << out << "\n";
     return out;
 }
 
 void build_graph(long long start_x) {
-//    cout << "recursing with start_x = " << start_x << "\n";
     long long root = int_lookup[start_x].back().second;
     long long x = start_x;
     long long max_x = int_lookup[start_x].back().first;
-//    cout << "max_x = " << max_x << "\n";
     int_lookup[start_x].pop_back();
     while (x != max_x) {
-//        cout << "x = " << x << "\n";
         if (int_lookup[x].size() > 0) {
             graph[root].push_back(int_lookup[x].back().second);
             long long new_x = int_lookup[x].back().first;
@@ -118,17 +101,11 @@ int main() {
         cin >> s >> e;
         rel_rounds.push_back({s, e});
     }
-
-//    cout << "input processed\n";
-
     long long rows = log2(N - 1) + 2;
     cnt_tree = vector<vector<long long>>(rows);
     for (long long row = 0; row != rows; ++row) {
         cnt_tree[row] = vector<long long>(1 << row, 1 << (rows - row - 1));
     }
-
-//    cout << "segtree built\n";
-
     vector<pair<long long, long long>> abs_rounds;
     abs_rounds.reserve(C);
     for (auto x : rel_rounds) {
@@ -143,57 +120,30 @@ int main() {
             cout << "e = " << e << " > " << N;
             return 0;
         }
-//        cout << "jousting " << s << " <= i < " << e << "\n";
-//        cout << "zeroing " << s << " <= x < " << e - 1 << "\n";
         zero(0, 0, s, e - 1);
     }
-//
-
-
     max_table = vector<vector<long long>>(rows);
     max_table.back() = vector<long long>(1 << (rows - 1), 0);
     for (long long i = 0; i != N - 1; ++i) {
-//        cout << "max_table[" << rows - 1 << "][" << i << "]\n";
         max_table.back()[i] = ranks[i];
     }
     for (long long row = rows - 2; row >= 0; --row) {
         long long stride = 1 << (rows - row - 1);
-//        max_table[row] = vector<long long>((1 << (rows - 1) - stride + 1));
         for (long long i = 0; i + stride <= (1 << (rows - 1)); ++i) {
-//            cout << "max_table[" << row << "][" << i << "]\n";
-//            cout << "looking for mt[" << row + 1 << "][" << i << "] and " << "mt[" << row + 1 << "][" << i + stride/2 << "]\n";
             max_table[row].push_back(max(max_table[row + 1][i], max_table[row + 1][i + stride / 2]));
         }
     }
-//
-//    for (auto x : max_table) {
-//        for (auto y : x) {
-//            cout << y << " ";
-//        }
-//        cout << "\n";
-//    }
-//
-//    cout << "table built\n";
-
     int_lookup = vector<vector<pair<long long, long long>>>(N);
     sort(abs_rounds.begin(), abs_rounds.end());
     for (long long i = 0; i != abs_rounds.size(); ++i) {
         auto x = abs_rounds[i];
         int_lookup[x.first].push_back({x.second, i});
     }
-
     long long root = int_lookup[0].back().second;
     max_depth = vector<pair<long long, long long>>(C);
     graph = vector<vector<long long>>(C);
-
     build_graph(0);
-
-//    cout << "graph built\n";
-
     get_depth(root);
-
-//    cout << "depths built\n";
-
     long long best_depth = 0;
     long long best_int = 0;
     for (long long i = 0; i != abs_rounds.size(); ++i) {
@@ -204,20 +154,5 @@ int main() {
             best_int = max_depth[i].second;
         }
     }
-//
-//
-//    for (auto x : abs_rounds) {
-//        cout << "jousting " << x.first << " <= i < " << x.second << "\n";
-//    }
-//
-//    for (long long i = 0; i != graph.size(); ++i) {
-//        cout << i << ": {";
-//        for (auto x : graph[i]) {
-//            cout << x << ", ";
-//        }
-//        cout << "}\n";
-//    }
-
     cout << abs_rounds[best_int].first << "\n";
-
 }
