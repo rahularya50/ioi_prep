@@ -1,0 +1,87 @@
+# go to the end
+right
+right
+moveDown:
+	move
+	border begin
+	jump moveDown
+	
+begin:
+	left
+	jump moveRight
+	
+moveLeft:
+	pebble moveOneL
+	move
+	border flipR
+	jump moveLeft
+
+moveOneL:
+	get
+	move
+	put
+	right
+	right
+	move
+	right
+	right
+	jump moveLeft
+
+flipR:
+	right
+	pebble moveAllLU
+	jump flipR2
+
+moveAllLU:
+	get
+	move
+	put
+	right
+	right
+	move
+	right
+	right
+	pebble moveAllLU	
+flipR2:
+	move
+	border end
+	right
+moveRight:
+	pebble moveOneR
+	move
+	border flipL
+	jump moveRight
+
+moveOneR:
+	get
+	move
+	put
+	right
+	right
+	move
+	right
+	right
+	jump moveRight
+
+flipL:
+	left
+	pebble moveAllRU
+	jump flipL2
+
+moveAllRU:
+	get
+	move
+	put
+	right
+	right
+	move
+	right
+	right
+	pebble moveAllRU
+flipL2:
+	move
+	left
+	jump moveLeft
+
+end:
+	halt

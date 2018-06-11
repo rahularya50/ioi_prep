@@ -1,0 +1,168 @@
+[SUBTASK 1]
+right
+jump check
+
+decrement:
+	get
+	move
+	get
+	right
+	right
+	jump check
+	
+check:
+	pebble checkr
+	halt
+	
+checkr:
+	move
+	left
+	left
+	pebble decrement
+	halt
+[SUBTASK 2]
+right
+right
+
+copy:
+	pebble moveone
+	move
+	move
+	right
+	right
+	pebble putback
+	jump next
+	
+putback:
+	get
+	move
+	move
+	put
+	right
+	right
+	move
+	move
+	right
+	right
+	pebble putback
+	
+next:
+	move
+	move
+	right
+	move
+	right
+	jump copy2
+	
+moveone:
+	get
+	move
+	put
+	move
+	put
+	right
+	right
+	move
+	move
+	right
+	right
+	jump copy
+	
+copy2:
+	pebble moveone2
+	move
+	move
+	right
+	right
+	pebble putback2
+	jump prep
+
+putback2:
+	get
+	move
+	move
+	put
+	right
+	right
+	move
+	move
+	right
+	right
+	pebble putback2
+
+prep:
+	move
+	left
+	move
+	right
+	right
+	jump check
+	
+moveone2:
+	get
+	move
+	put
+	move
+	put
+	right
+	right
+	move
+	move
+	right
+	right
+	jump copy2
+	
+decrement:
+	get
+	move
+	get
+	right
+	right
+	jump check
+	
+check:
+	pebble checkr
+	left
+	move
+	halt
+	
+checkr:
+	move
+	left
+	left
+	pebble decrement
+	right
+	move
+	halt
+	
+[SUBTASK 3]
+right
+
+findFirst:
+	pebble found
+	move
+	jump findFirst
+
+found:
+	move
+	jump findIn
+	
+findIn:
+	move
+	pebble shiftIn
+	jump findIn
+
+shiftIn:
+	right
+	right
+	get
+	move
+	pebble end
+	put
+	jump findIn
+
+end:
+	halt
+[SUBTASK 4]
+
+[SUBTASK 5]

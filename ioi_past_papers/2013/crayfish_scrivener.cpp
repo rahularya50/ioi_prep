@@ -30,6 +30,7 @@ int main() {
     tree.reserve(N);
     vector<int> pos = {0};
     pos.reserve(N);
+}
     for (int i = 0; i != N; ++i) {
         char cmd;
         cin >> cmd;
