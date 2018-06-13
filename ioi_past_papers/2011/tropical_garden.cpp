@@ -16,15 +16,15 @@ pair<long long, bool> go_nonbest(long long);
 
 // coming via best
 pair<long long, bool> go(long long i, bool viabest, bool startP) {
+    if (!startP && i == P) {
+        return {0, viabest};
+    }
     if (dp[viabest][i].first == INPROGRESS) {
         dp[viabest][i].first = IMPOSSIBLE;
         return {IMPOSSIBLE, -1};
     }
     if (dp[viabest][i].first != UNKNOWN) {
         return dp[viabest][i];
-    }
-    if (!startP && i == P) {
-        return {0, N > 1000 ? viabest : true};
     }
 
     dp[viabest][i] = {INPROGRESS, -1};
