@@ -1,0 +1,161 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+struct edge {
+    int dest;
+    int l;
+};
+
+vector<vector<edge>> graph;
+vector<vector<edge>> tree;
+vector<int> roots;
+vector<int> root;
+vector<int> parent; // NOT NECESSARILY A DFS TREE
+vector<int> max_depth;
+vector<int> max_tree_path;
+
+int dfs_max_depth(int i) {
+    if (max_depth[i] != -1) {
+        return max_depth[i];
+    }
+    int best = 0;
+    for (auto x : tree[i]) {
+        best = max(best, x.l + dfs_max_depth(x.dest));
+    }
+    max_depth[i] = best;
+    return best;
+}
+
+int get_max_tree_path(int i) {
+    if (max_tree_path[i] != -1) {
+        return max_tree_path[i];
+    }
+    pair<int, int> top_two = {0, 0};
+    for (auto x : tree[i]) {
+        auto val = x.l + dfs_max_depth(x.dest);
+        if (val > top_two.first) {
+            top_two = {val, top_two.first};
+        } else if (val > top_two.second) {
+            top_two = {top_two.first, val};
+        }
+    }
+    max_tree_path[i] = top_two.first + top_two.second;
+    return max_tree_path[i];
+}
+
+int dfs_max_depth2(int i, int block1, int block2) {
+    int best = 0;
+    for (auto x : graph[i]) {
+        if (x.dest == block1 || x.dest == block2) {
+            continue;
+        }
+        best = max(best, dfs_max_depth2(x.dest, i, -1) + x.l);
+    }
+    return best;
+}
+
+int main() {
+    int N;
+    cin >> N;
+    graph = vector<vector<edge>>(N);
+    for (int i = 0; i != N; ++i) {
+        int x, l;
+        cin >> x >> l;
+        graph[i].push_back({x - 1, l});
+        graph[x - 1].push_back({i, l});
+    }
+    tree = vector<vector<edge>>(N);
+    parent = vector<int>(N, -1);
+    root = vector<int>(N);
+    vector<pair<int, edge>> spares;
+    for (int i = 0; i != N; ++i) {
+        if (parent[i] != -1) {
+            continue;
+        }
+        cout << "new root: " << i << "\n";
+        roots.push_back(i);
+        spares.push_back({-1, {-1, -1}});
+        vector<int> todo = {i};
+        while (todo.size() > 0) {
+            auto x = todo.back();
+            cout << "exploring " << x << "\n";
+            root[x] = roots.size() - 1;
+            todo.pop_back();
+            for (auto y : graph[x]) {
+                if (parent[y.dest] == -1 && y.dest != i) {
+                    parent[y.dest] = x;
+                    tree[x].push_back(y);
+                    todo.push_back(y.dest);
+                } else if (parent[x] != y.dest) {
+                    spares.back() = {x, y};
+                }
+            }
+        }
+    }
+
+    max_depth = vector<int>(N, -1);
+    max_tree_path = vector<int>(N, -1);
+    vector<int> bests(roots.size());
+    for (int i = 0; i != N; ++i) {
+        bests[root[i]] = max(bests[root[i]], get_max_tree_path(i));
+    }
+
+    int out = 0;
+    vector<pair<int, edge>> prev(N, -1);
+    for (int i = 0; i != roots.size(); ++i) {
+        auto x = spares[i];
+        vector<int> todo = {x.first};
+        while (todo.size() > 0) {
+            auto a = todo.back();
+            todo.pop_back();
+            if (a == x.second) {
+                break;
+            }
+            for (auto y : graph[a]) {
+                if (y.dest == prev[a] || a == x.first && y.dest = x.second) {
+                    continue;
+                }
+                prev[y.dest] = {a, y}; // edge pointing from a to y.dest
+                todo.push_back(y.dest);
+            }
+        }
+        deque<pair<int, edge>> seq;
+        pair<int, edge> pos = {x.second, {-1, 0}};
+        while (pos.first != x.first) {
+            seq.push_front(pos);
+            pos = prev[pos];
+        }
+        seq.push_front(pos);
+        seq.pop_back();
+
+        vector<int> left_dp(seq.size());
+        int dist = 0;
+        int prev = -1;
+        for (int j = 0; j < seq.size() - 1; ++j) {
+            left_dp[j] = dist + dfs_max_depth_2(seq[j].first, prev, seq[j].second.dest)
+            dist += seq[j].second.l;
+            prev = seq[j].first;
+        }
+
+        vector<int> right_dp(seq.size());
+        dist = 0;
+        prev = -1;
+        for (int j = seq.size() - 1; j > 0; --j) {
+            right_dp[j] = dist + dfs_max_depth_2(seq[j].first, prev, seq[j - 1].first)
+            dist += seq[j - 1].second.l;
+            prev = seq[j].first;
+        }
+
+        set<int> rvals(right_dp.begin(), right_dp.end());
+        int best = -1;
+        for (int l = 0; l < seq.size() - 1; ++l) {
+            best = max(best, left_dp[l] + *rvals.rbegin());
+            rvals.erase(right_dp[l + 1]);
+        }
+
+        bests[root[i]] = max(bests[root[i]], best);
+    }
+
+    cout << accumulate(bests.begin(), bests.end(), 0);
+}
