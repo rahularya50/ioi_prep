@@ -219,3 +219,9 @@ transmutation2.o
 *.o
 8. IBO results service form.docx
 *.c
+*.pas
+ioi_past_papers/2010/hottercolder/hottercolder.h
+*.h
+ioi_past_papers/2010/hottercolder/grader.cpp
+ioi_past_papers/2010/hottercolder/grader.in.2
+ioi_past_papers/2010/hottercolder/hottercolder.cpp
