@@ -69,7 +69,7 @@ int main() {
             tovisit.push_back({{trie[a.first].right, trie[a.second].right}, b + 1});
         }
         dp[0][i] = best;
-        cout << "dp[0][" << i << "] = " << best << "\n";
+//        cout << "dp[0][" << i << "] = " << best << "\n";
     }
 
     for (int i = 1; i != trie.size(); ++i) {
@@ -83,7 +83,7 @@ int main() {
                 best = (best == -1) ? val : min(best, val);
             }
             dp[i][j] = best;
-            cout << "dp[" << i << "][" << j << "] = " << best << "\n";
+//            cout << "dp[" << i << "][" << j << "] = " << best << "\n";
         }
     }
 

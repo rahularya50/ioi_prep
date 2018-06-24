@@ -74,9 +74,9 @@ int main() {
         hull.push_back(new_seg);
 
 //        cout << "Current hull: ";
-        for (auto seg : hull) {
+//        for (auto seg : hull) {
 //            cout << "(" << seg.left << ", " << seg.m << ", " << seg.c << "), ";
-        }
+//        }
 //        cout << "\n";
     }
 

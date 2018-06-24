@@ -225,3 +225,5 @@ ioi_past_papers/2010/hottercolder/hottercolder.h
 ioi_past_papers/2010/hottercolder/grader.cpp
 ioi_past_papers/2010/hottercolder/grader.in.2
 ioi_past_papers/2010/hottercolder/hottercolder.cpp
+*.1
+ioi_past_papers/2010/hottercolder/grader.i6n.1
