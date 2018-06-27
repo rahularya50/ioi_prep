@@ -43,41 +43,35 @@ int main() {
     }
 
     vector<int> out;
-    map<int, int> maxes;
-    map<int, int> mins;
+    map<int, pair<int, int>> lims;
     vector<int> points;
     points.reserve(N+M);
     for (int i = 1; i <= N*M && points.size() != N + M - 1; ++i) {
 //        cout << "Trying " << i << "\n";
         int x1 = x[i];
         int y1 = y[i];
-        auto iter1 = mins.upper_bound(x1);
-        if (iter1 != mins.end() && iter1->second < y1) {
+        auto iter1 = lims.upper_bound(x1);
+        if (iter1 != lims.end() && iter1->second.first < y1) {
 //            cout << "Too low\n";
             continue;
         }
-        auto iter2 = maxes.lower_bound(x1);
-        if (iter2 != maxes.begin()) {
-            advance(iter2, -1);
-            if (iter2->second > y1) {
+        auto iter2 = iter1; // one past
+        if (iter2 != lims.begin()) {
+            advance(iter2, -1); // either equal or one behind
+            auto iter3 = iter2;
+            if (iter3->first == x1 && iter3 != lims.begin()) { // if equal and not the first
+                advance(iter3, -1); // now one behind
+            }
+            if (iter3->first != x1 && iter3->second.second > y1) { // if not equal
 //                cout << "Too high\n";
                 continue;
             }
         }
-        auto dog = maxes.find(x1);
-        if (dog == maxes.end()) {
-            maxes[x1] = y1;
+        if (iter2->first != x1) {
+            lims[x1] = {y1, y1};
         } else {
-            dog->second = max(dog->second, y1);
+            iter2->second = {min(iter2->second.first, y1), max(iter2->second.second, y1)};
         }
-//        cout << "maxes[" << x << "] = " << maxes[x] << ", ";
-        auto cat = mins.find(x1);
-        if (cat == mins.end()) {
-            mins[x1] = y1;
-        } else {
-            cat->second = min(cat->second, y1);
-        }
-//        cout << "mins[" << x << "] = " << mins[x] << "\n";
         points.push_back(i);
     }
 
