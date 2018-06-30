@@ -1,0 +1,36 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+const long long MODULUS = 1e9 + 7;
+
+pair<long long, long long> lin_comb(long long a, long long b)
+{
+    if (a < b)
+    {
+        auto x = lin_comb(b, a);
+        return {x.second, x.first};
+    }
+    if (b == 0)
+    {
+        return {1, 0};
+    }
+
+    auto x = lin_comb(b, a % b);
+    auto y = x.first;
+    auto z = x.second;
+
+    long long k = a / b;
+
+    return {z, y - k * z};
+}
+
+int main()
+{
+    int a, b;
+
+    cin >> a >> b;
+    cout << lin_comb(a, b);
+
+    return 0;
+}
