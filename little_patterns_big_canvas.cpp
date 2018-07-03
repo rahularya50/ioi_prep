@@ -7,7 +7,7 @@ struct edge {
     long long cap;
 };
 
-long long INF = numeric_limits<int>::max();
+//long long INF = numeric_limits<int>::max();
 
 int main() {
 //    while (true) {
@@ -43,9 +43,9 @@ int main() {
             continue;
         }
         if (parity[i]) {
-            graph[i].push_back({p[i], INF});
+            graph[i].push_back({p[i], 1});
         } else {
-            graph[p[i]].push_back({i, INF});
+            graph[p[i]].push_back({i, 1});
         }
     }
 
@@ -63,7 +63,7 @@ int main() {
     while (true) {
         vector<long long> prev(N + 2, -1);
         vector<long long> flow(N + 2, 0);
-        flow[SOURCE] = INF;
+        flow[SOURCE] = 1;
         deque<long long> todo = {SOURCE};
         while (todo.size() > 0) {
             auto n = todo.front();
@@ -77,10 +77,12 @@ int main() {
                 }
                 prev[x.dest] = n;
                 flow[x.dest] = min(flow[n], x.cap);
+                while (flow[x.dest] == 0) { }
                 todo.push_back(x.dest);
             }
         }
         if (prev[SINK] == -1) {
+            while (flow[SINK] != 0) { }
             break;
         }
         out += flow[SINK];
@@ -90,9 +92,9 @@ int main() {
             bool flag = false;
             for (long long i = 0; i != graph[pos].size(); ++i) {
                 if (graph[pos][i].dest == prev[pos]) {
-                    if (graph[pos][i].cap != INF) {
+//                    if (graph[pos][i].cap != INF) {
                         graph[pos][i].cap += flow[SINK];
-                    }
+//                    }
                     flag = true;
                     break;
                 }
@@ -102,12 +104,12 @@ int main() {
             }
             for (long long i = 0; i != graph[prev[pos]].size(); ++i) {
                 if (graph[prev[pos]][i].dest == pos) {
-                    if (graph[prev[pos]][i].cap != INF) {
+//                    if (graph[prev[pos]][i].cap != INF) {
                         graph[prev[pos]][i].cap -= flow[SINK];
                         if (graph[prev[pos]][i].cap == 0) {
                             graph[prev[pos]].erase(graph[prev[pos]].begin() + i);
                         }
-                    }
+//                    }
                     break;
                 }
             }
@@ -117,6 +119,11 @@ int main() {
 
 //    cout << "flow = " << out << "\n";
 
-    cout << (accumulate(s.begin(), s.end(), 0LL) - out) << "\n";
+    long long j = 0;
+    for (auto x : s) {
+        j += x;
+    }
+
+    cout << (j - out) << "\n";
 //    }
 }
