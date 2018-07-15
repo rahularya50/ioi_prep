@@ -60,7 +60,6 @@ int main() {
 		fin >> a >> b >> c;
 		--a;
 		--b;
-//		cout << a << " " << b << " " << c << "\n";
 		graph[a].push_back({b, c});
 		graph[b].push_back({a, c});
 	}
@@ -112,45 +111,24 @@ int main() {
             above = parent[nextseg.high];
             data[x].push_back(newseg);
             ++loglen;
-//            cout << "x = " << x << ", above = " << above << "\n";
         }
     }
 
-//    for (int i = 0; i != N; ++i) {
-//        cout << "Vertex: " << i << ": ";
-//        for (auto x : data[i]) {
-//            cout << "\n{";
-//            cout << "buy_up = " << x.buy_up << ", ";
-//            cout << "sell_up = " << x.sell_up << ", ";
-//            cout << "best_up = " << x.best_up << ", ";
-//            cout << "buy_down = " << x.buy_down << ", ";
-//            cout << "sell_down = " << x.sell_down << ", ";
-//            cout << "best_down = " << x.best_down << ", ";
-//            cout << "total_cost = " << x.total_cost << ", ";
-//            cout << "high = " << x.high << "}, ";
-//        }
-//        cout << "\n";
-//    }
-
     int Q;
     fin >> Q;
-//    cout << "Q = " << Q << "\n";
     for (int q = 0; q != Q; ++q) {
 		int u, v;
 		fin >> u >> v;
 		--u;
 		--v;
-//		cout << "reading u = " << u << ", v = " << v << "\n";
 		vector<segment> leftsegs;
 		vector<segment> rightsegs;
 		while (depth[u] < depth[v]) {
 			rightsegs.push_back(data[v][(int)log2(depth[v] - depth[u])]);
-//			cout << "rseg from " << v << " to " << rightsegs.back().high << "\n";
 			v = parent[rightsegs.back().high];
 		}
 		while (depth[u] > depth[v]) {
 			leftsegs.push_back(data[u][(int)log2(depth[u] - depth[v])]);
-//            cout << "lseg from " << u << " to " << leftsegs.back().high << "\n";
             u = parent[leftsegs.back().high];
 		}
 		int jumpSize = log2(depth[u] + 1);
@@ -162,22 +140,17 @@ int main() {
 			if (data[u][jumpSize].high != data[v][jumpSize].high) {
 				leftsegs.push_back(data[u][jumpSize]);
 				rightsegs.push_back(data[v][jumpSize]);
-//				cout << "lseg from " << u << " to " << leftsegs.back().high << "\n";
-//				cout << "rseg from " << v << " to " << rightsegs.back().high << "\n";
 				u = parent[leftsegs.back().high];
 				v = parent[rightsegs.back().high];
 			}
 			--jumpSize;
 		}
 
-//		cout << "segs found\n";
-
 		vector<smallseg> segments;
 		for (auto x : leftsegs) {
 			segments.push_back({x.sell_up, x.buy_up, x.best_up, x.total_cost, parent_cost[x.high]});
 		};
 		if (u == v) {
-//            cout << "peak at u = " << u << "\n";
             segments.push_back({p[u], -p[u], 0, 0, 0});
 		} else {
 			segments.push_back({p[parent[u]], p[parent[u]], 0});
@@ -187,12 +160,7 @@ int main() {
 			segments.push_back({x.sell_down, x.buy_down, x.best_down, x.total_cost, 0});
 			segments[segments.size() - 2].link_cost = parent_cost[x.high];
 		}
-//		for (auto x : segments) {
-//            cout << "{" << x.sell << ", " << x.buy << ", " << x.total_cost << ", " << x.link_cost << ", " << x.best << "}\n";
-//		}
-//		cout << segments.size() << "\n";
 		auto x = get_best(segments, 0, segments.size()).best;
-//		cout << "x = " << x << "\n";
 		fout << x << "\n";
 	}
 }
