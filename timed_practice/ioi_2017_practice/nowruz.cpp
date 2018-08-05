@@ -31,12 +31,41 @@ bool valid(int x, int y) {
     return true;
 }
 
+int score(const vector<vector<int>>& grid) {
+//    cout << "start scoring!\n";
+    int out = 0;
+    for (int i = 0; i != M; ++i) {
+        for (int j = 0; j != N; ++j) {
+            if (grid[i][j] != PATH) {
+                continue;
+            }
+            int cnt = 0;
+            if (i != 0 && grid[i - 1][j] == PATH) {
+                ++cnt;
+            }
+            if (i != M - 1 && grid[i + 1][j] == PATH) {
+                ++cnt;
+            }
+            if (j != 0 && grid[i][j - 1] == PATH) {
+                ++cnt;
+            }
+            if (j != N - 1 && grid[i][j + 1] == PATH) {
+                ++cnt;
+            }
+            if (cnt == 1) {
+                ++out;
+            }
+        }
+    }
+//    cout << "score = " << out << "\n";
+    return out;
+}
 
 int main() {
     cin >> M >> N >> K;
 
-    vector<vector<int>> grid(M, vector<int>(N));
-    for (auto& x : grid) {
+    vector<vector<int>> original_grid(M, vector<int>(N));
+    for (auto& x : original_grid) {
         for (auto& y : x) {
             char c;
             cin >> c;
@@ -47,65 +76,81 @@ int main() {
             }
         }
     }
+//    cout << "K = " << K << "\n";
 
-    // dfs maze construction
+    int best = 0;
+    auto best_grid = original_grid;
 
-    deque<obj> todo;
-    todo.push_back({M / 2, N / 2, 0, 1, rand()});
-    while (todo.size() > 0) {
-        auto pos = todo.front();
-        todo.pop_front();
+    for (int i = 0; i != 20; ++i) {
+        auto grid = original_grid;
+        // dfs maze construction
 
-        if (grid[pos.x][pos.y] == PATH) {
-            grid[pos.x][pos.y] = BUSH;
-            continue;
-        }
+        deque<obj> todo;
+        todo.push_back({rand() % M, rand() % N, 0, 1, rand()});
+        while (todo.size() > 0) {
+            auto pos = todo.front();
+            todo.pop_front();
 
-        auto leftX = pos.x - pos.yDelta;
-        auto leftY = pos.y + pos.xDelta;
-        auto rightX = pos.x + pos.yDelta;
-        auto rightY = pos.y - pos.xDelta;
-        auto nextX = pos.x + pos.xDelta;
-        auto nextY = pos.y + pos.yDelta;
+            if (grid[pos.x][pos.y] == PATH) {
+                grid[pos.x][pos.y] = BUSH;
+                continue;
+            }
 
-        bool fail;
-        if (valid(leftX, leftY) && grid[leftX][leftY] == PATH) {
-            fail = true;
-        } else if (valid(rightX, rightY) && grid[rightX][rightY] == PATH) {
-            fail = true;
-        } else if (valid(nextX, nextY) && grid[nextX][nextY] == PATH) {
-            fail = true;
-        } else {
-            fail = false;
-        }
+            auto leftX = pos.x - pos.yDelta;
+            auto leftY = pos.y + pos.xDelta;
+            auto rightX = pos.x + pos.yDelta;
+            auto rightY = pos.y - pos.xDelta;
+            auto nextX = pos.x + pos.xDelta;
+            auto nextY = pos.y + pos.yDelta;
 
-        if (fail) {
-            grid[pos.x][pos.y] = BUSH;
-            continue;
-        }
+            bool fail;
+            if (valid(leftX, leftY) && grid[leftX][leftY] == PATH) {
+                fail = true;
+            } else if (valid(rightX, rightY) && grid[rightX][rightY] == PATH) {
+                fail = true;
+            } else if (valid(nextX, nextY) && grid[nextX][nextY] == PATH) {
+                fail = true;
+            } else {
+                fail = false;
+            }
 
-        grid[pos.x][pos.y] = PATH;
+            if (fail) {
+                grid[pos.x][pos.y] = BUSH;
+                continue;
+            }
 
-        if (valid(leftX, leftY) && grid[leftX][leftY] == FREE) {
-            todo.push_back({leftX, leftY, -pos.yDelta, pos.xDelta, rand()});
-        }
-        if (valid(rightX, rightY) && grid[rightX][rightY] == FREE) {
-            todo.push_back({rightX, rightY, pos.yDelta, -pos.xDelta, rand()});
-        }
-        if (valid(nextX, nextY) && grid[nextX][nextY] == FREE) {
-            todo.push_back({nextX, nextY, pos.xDelta, pos.yDelta, 0});
-        }
-    }
+            grid[pos.x][pos.y] = PATH;
 
-    for (auto& x : grid) {
-        for (auto& y : x) {
-            if (y == 0) {
-                y = BUSH;
+            if (valid(leftX, leftY) && grid[leftX][leftY] == FREE) {
+                todo.push_back({leftX, leftY, -pos.yDelta, pos.xDelta, rand()});
+            }
+            if (valid(rightX, rightY) && grid[rightX][rightY] == FREE) {
+                todo.push_back({rightX, rightY, pos.yDelta, -pos.xDelta, rand()});
+            }
+            if (valid(nextX, nextY) && grid[nextX][nextY] == FREE) {
+                todo.push_back({nextX, nextY, pos.xDelta, pos.yDelta, 0});
             }
         }
+
+        for (auto& x : grid) {
+            for (auto& y : x) {
+                if (y == 0) {
+                    y = BUSH;
+                }
+            }
+        }
+
+        auto curr = score(grid);
+        if (curr > best) {
+//            cout << curr << "\n";
+            best_grid = grid;
+            best = curr;
+        }
     }
 
-    for (auto& x : grid) {
+//    cout << "done!\n";
+
+    for (auto& x : best_grid) {
         for (auto& y : x) {
             if (y == BUSH) {
                 cout << "X";
