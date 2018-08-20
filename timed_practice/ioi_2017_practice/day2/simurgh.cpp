@@ -78,6 +78,7 @@ vector<int> find_roads(int n1, vector<int> u, vector<int> v) {
     // otherwise, point to the guy who we're based on
 
     vector<bool> include(u.size(), false);
+    vector<bool> known(u.size(), false);
 
     for (int i = 0; i != u.size(); ++i) {
         if (curr_tree[i]) {
@@ -128,34 +129,63 @@ vector<int> find_roads(int n1, vector<int> u, vector<int> v) {
             vector<int> same = {i};
             vector<int> diff = {};
             bool ans = false;
-            for (auto x : alternatives) {
-//                cout << "removing edge #" << x << endl;
-                def_query[lookup[x]] = i;
-                auto res = count_common_roads(def_query);
-                def_query[lookup[x]] = x;
 
-//                cout << "math time!" << endl;
-
-                if (res > baseline) {
-//                    cout << "Excluding edge #" << x << endl;
-                    ans = true;
-                    diff.push_back(x);
-                } else if (res < baseline) {
-                    ans = false;
-                    diff.push_back(x);
-                } else {
-//                    cout << "pushing " << x << " to solved!" << endl;
-                    same.push_back(x);
+            if (known[i] && include[i]) {
+                // this should never happen since we'd never try a free edge unless it was the focus
+                for (auto x : alternatives) {
+                    known[x] = true;
+                    include[x] = false;
                 }
             }
 
-//            cout << "ans = " << ans << "\n";
+            for (auto x : alternatives) {
+                if (known[x] && include[x]) {
+                    ans = true;
+                    for (auto y : alternatives) {
+                        known[y] = true;
+                        include[y] = false;
+                    }
+                    include[x] = true;
+                    break;
+                }
+            }
+
+            if (ans) {
+                continue;
+            }
+
+            for (auto x : alternatives) {
+                    if (known[x]) {
+                        continue;
+                    }
+                 // cout << "removing edge #" << x << endl;
+                    def_query[lookup[x]] = i;
+                    auto res = count_common_roads(def_query);
+                    def_query[lookup[x]] = x;
+
+               // cout << "math time!" << endl;
+
+                    if (res > baseline) {
+                       // cout << "Excluding edge #" << x << endl;
+                        ans = true;
+                        diff.push_back(x);
+                    } else if (res < baseline) {
+                        ans = false;
+                        diff.push_back(x);
+                    } else {
+                       // cout << "pushing " << x << " to solved!" << endl;
+                        same.push_back(x);
+                    }
+                }
+            //            cout << "ans = " << ans << "\n";
             for (auto x : same) {
-//                cout << "same = " << x << "\n";
+            //                cout << "same = " << x << "\n";
+                known[x] = true;
                 include[x] = ans;
             }
             for (auto x : diff) {
 //                cout << "diff = " << x << "\n";
+                known[x] = true;
                 include[x] = !ans;
             }
         }
@@ -172,77 +202,79 @@ vector<int> find_roads(int n1, vector<int> u, vector<int> v) {
     return out;
 
 }
-//
-//static int MAXQ = 30000;
-//
-//static int n, m, q = 0;
-//static vector<int> u, v;
-//static vector<bool> goal;
-//
-//static void wrong_answer() {
-//	printf("NO\n");
-//	exit(0);
-//}
-//
-//static bool is_valid(const vector<int>& r) {
-//	if(int(r.size()) != n - 1)
-//		return false;
-//
-//	for(int i = 0; i < n - 1; i++)
-//		if (r[i] < 0 || r[i] >= m)
-//			return false;
-//
-//	return true;
-//}
-//
-//static int _count_common_roads_internal(const vector<int>& r) {
-//	if(!is_valid(r))
-//		wrong_answer();
-//
-//	int common = 0;
-//	for(int i = 0; i < n - 1; i++) {
-//		bool is_common = goal[r[i]];
-//		if (is_common)
-//			common++;
-//	}
-//
-//	cout << "responded to query!<< endl;
-//	return common;
-//}
-//
-//int count_common_roads(const vector<int>& r) {
-//    cout << "received query!<< endl;
-//	q++;
-//	if(q > MAXQ)
-//		wrong_answer();
-//
-//	return _count_common_roads_internal(r);
-//}
-//
-//int main() {
-//	assert(2 == scanf("%d %d", &n, &m));
-//
-//	u.resize(m);
-//	v.resize(m);
-//
-//	for(int i = 0; i < m; i++)
-//		assert(2 == scanf("%d %d", &u[i], &v[i]));
-//
-//	goal.resize(m, false);
-//
-//	for(int i = 0; i < n - 1; i++) {
-//		int id;
-//		assert(1 == scanf("%d", &id));
-//		goal[id] = true;
-//	}
-//
-//	vector<int> res = find_roads(n, u, v);
-//
-//	if(_count_common_roads_internal(res) != n - 1)
-//		wrong_answer();
-//
-//	printf("YES\n");
-//
-//	return 0;
-//}
+
+static int MAXQ = 30000;
+
+static int n, m, q = 0;
+static vector<int> u, v;
+static vector<bool> goal;
+
+static void wrong_answer() {
+	printf("NO\n");
+	exit(0);
+}
+
+static bool is_valid(const vector<int>& r) {
+	if(int(r.size()) != n - 1)
+		return false;
+
+	for(int i = 0; i < n - 1; i++)
+		if (r[i] < 0 || r[i] >= m)
+			return false;
+
+	return true;
+}
+
+static int _count_common_roads_internal(const vector<int>& r) {
+	if(!is_valid(r))
+		wrong_answer();
+
+	int common = 0;
+	for(int i = 0; i < n - 1; i++) {
+		bool is_common = goal[r[i]];
+		if (is_common)
+			common++;
+	}
+
+	cout << "responded to query!" << endl;
+	return common;
+}
+
+int count_common_roads(const vector<int>& r) {
+   cout << "received query!" << endl;
+	q++;
+	if(q > MAXQ)
+		wrong_answer();
+
+	return _count_common_roads_internal(r);
+}
+
+int main() {
+	assert(2 == scanf("%d %d", &n, &m));
+
+	u.resize(m);
+	v.resize(m);
+
+	for(int i = 0; i < m; i++)
+		assert(2 == scanf("%d %d", &u[i], &v[i]));
+
+	goal.resize(m, false);
+
+	for(int i = 0; i < n - 1; i++) {
+		int id;
+		assert(1 == scanf("%d", &id));
+		goal[id] = true;
+	}
+
+    cout << "starting!\n";
+
+	vector<int> res = find_roads(n, u, v);
+
+	if(_count_common_roads_internal(res) != n - 1)
+		wrong_answer();
+
+	printf("YES\n");
+
+	return 0;
+}
 
