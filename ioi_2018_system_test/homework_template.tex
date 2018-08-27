@@ -1,0 +1,94 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,textcomp,amssymb,geometry,graphicx,enumerate}
+
+\def\Name{}  % Your name
+\def\SID{}  % Your student ID number
+\def\Homework{#} % Number of Homework
+\def\Session{} 
+\def\Class{}
+
+
+\title{\Class -- \Session --- Homework \Homework\ Solutions}
+\author{\Name, SID \SID}
+\markboth{\Class--\Session\  Homework \Homework\ \Name}{\Class--\Session\ Homework \Homework\ \Name}
+\pagestyle{myheadings}
+\date{}
+
+\textheight=9in
+\textwidth=6.5in
+\topmargin=-.75in
+\oddsidemargin=0.25in
+\evensidemargin=0.25in
+
+% CUSTOM ENVIRONMENTS %
+\newenvironment{qparts}{\begin{enumerate}[{(}a{)}]}{\end{enumerate}}
+\def\endproofmark{$\Box$}
+\newenvironment{proof}{\par{\bf Proof}:}{\endproofmark\smallskip}
+\newenvironment{nospaceflalign*}    % No extra vertical space before flalign* environment
+{
+	\setlength{\abovedisplayskip}{-\baselineskip}
+	\csname flalign*\endcsname
+}
+{
+	\csname endflalign*\endcsname
+}
+
+\begin{document}
+\maketitle
+
+Collaborators: PUT SOMETHING HERE (LIST OF YOUR COLLABORATORS, OR WRITE NONE)
+
+\section*{1. Course Syllabus}
+\begin{qparts}
+\item
+YOUR ANSWER GOES HERE
+
+\item
+YOUR ANSWER GOES HERE
+
+\end{qparts}
+
+
+
+\newpage
+\section*{2.}
+\begin{qparts}
+\item
+YOUR ANSWER GOES HERE
+
+\item
+YOUR ANSWER GOES HERE
+
+\item
+YOUR ANSWER GOES HERE
+
+\item
+YOUR ANSWER GOES HERE
+
+\item
+YOUR ANSWER GOES HERE
+
+\end{qparts}
+
+
+\newpage
+\section*{3.}
+YOUR ANSWER GOES HERE
+
+
+\newpage
+\section*{4.}
+YOUR ANSWER GOES HERE
+
+
+\newpage
+\section*{5.}
+YOUR ANSWER GOES HERE
+
+
+\newpage
+\section*{6.}
+YOUR ANSWER GOES HERE
+
+
+\end{document}
